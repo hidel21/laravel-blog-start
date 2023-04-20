@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Providers;
-
+use App\Models\Post;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Http\Request;
@@ -26,7 +26,20 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        Route::model('post', Post::class);
+        Route::bind('post', function ($value) {
+            if (is_int($value)) {
+                return Post::findOrFail($value);
+            }
+
+            return Post::where('slug', $value)
+                ->where('status', 'published')
+                ->where('date', '<=', now())->firstOrFail();
+        });
+
         $this->configureRateLimiting();
+        
+        Route::model('post', Post::class);
 
         $this->routes(function () {
             Route::middleware('api')
