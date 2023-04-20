@@ -24,4 +24,4 @@
             @endforeach
         </ul>
     </body>
-</html
+</html>
